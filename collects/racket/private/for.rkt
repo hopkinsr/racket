@@ -605,10 +605,10 @@
 
   (define (check-in-lines p mode)
     (unless (input-port? p) (raise-argument-error 'in-lines "input-port?" p))
-    (unless (memq mode '(linefeed return return-linefeed any any-one))
+    (unless (memq mode '(formfeed linefeed ls ps return return-linefeed any any-one))
       (raise-argument-error
        'in-lines
-       "(or/c 'linefeed 'return 'return-linefeed 'any 'any-one)"
+       "(or/c 'formfeed 'linefeed 'ls 'ps 'return 'return-linefeed 'any 'any-one)"
        mode)))
 
   (define in-lines
