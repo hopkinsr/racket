@@ -145,6 +145,9 @@ ROSYM static Scheme_Object *any_one_symbol;
 ROSYM static Scheme_Object *cr_symbol;
 ROSYM static Scheme_Object *lf_symbol;
 ROSYM static Scheme_Object *crlf_symbol;
+ROSYM static Scheme_Object *ff_symbol;
+ROSYM static Scheme_Object *ls_symbol;
+ROSYM static Scheme_Object *ps_symbol;
 ROSYM static Scheme_Object *module_symbol;
 ROSYM static Scheme_Object *string_symbol;
 
@@ -194,6 +197,9 @@ scheme_init_port_fun(Scheme_Env *env)
   REGISTER_SO(cr_symbol);
   REGISTER_SO(lf_symbol);
   REGISTER_SO(crlf_symbol);
+  REGISTER_SO(ff_symbol);
+  REGISTER_SO(ls_symbol);
+  REGISTER_SO(ps_symbol);
   REGISTER_SO(module_symbol);
   REGISTER_SO(string_symbol);
 
@@ -202,6 +208,9 @@ scheme_init_port_fun(Scheme_Env *env)
   cr_symbol       = scheme_intern_symbol("return");
   lf_symbol       = scheme_intern_symbol("linefeed");
   crlf_symbol     = scheme_intern_symbol("return-linefeed");
+  ff_symbol       = scheme_intern_symbol("formfeed");
+  ls_symbol       = scheme_intern_symbol("ls");
+  ps_symbol       = scheme_intern_symbol("ps");
   module_symbol   = scheme_intern_symbol("module");
   string_symbol   = scheme_intern_symbol("string");
 
@@ -3128,6 +3137,7 @@ do_read_line (int as_bytes, const char *who, int argc, Scheme_Object *argv[])
   Scheme_Object *port;
   int ch, ascii;
   int crlf = 0, cr = 0, lf = 1;
+  int ff = 0, ls = 0, ps = 0;
   char *buf, *oldbuf, onstack[32];
   intptr_t size = 31, oldsize, i = 0;
   Scheme_Input_Port *ip;
@@ -3139,21 +3149,30 @@ do_read_line (int as_bytes, const char *who, int argc, Scheme_Object *argv[])
   if (argc > 1) {
     Scheme_Object *v = argv[1];
     if (SAME_OBJ(v, any_symbol)) {
-      crlf = cr = lf = 1;
+      crlf = cr = lf = ff = ls = ps = 1;
     } else if (SAME_OBJ(v, any_one_symbol)) {
       crlf = 0;
-      cr = lf = 1;
+      cr = lf = ff = ls = ps = 1;
     } else if (SAME_OBJ(v, cr_symbol)) {
-      crlf = lf = 0;
+      crlf = lf = ff = ls = ps = 0;
       cr = 1;
     } else if (SAME_OBJ(v, lf_symbol)) {
-      crlf = cr = 0;
+      crlf = cr = ff = ls = ps = 0;
       lf = 1;
     } else if (SAME_OBJ(v, crlf_symbol)) {
-      lf = cr = 0;
+      lf = cr = ff = ls = ps = 0;
       crlf = 1;
+    } else if (SAME_OBJ(v, ff_symbol)) {
+      crlf = cr = lf = ls = ps = 0;
+      ff = 1;
+    } else if (SAME_OBJ(v, ls_symbol)) {
+      crlf = cr = lf = ff = ps = 0;
+      ls = 1;
+    } else if (SAME_OBJ(v, ps_symbol)) {
+      crlf = cr = lf = ff = ls = 0;
+      ps = 1;
     } else
-      scheme_wrong_contract(who, "(or/c 'any 'cr 'lf 'crlf)", 1, argc, argv);
+      scheme_wrong_contract(who, "(or/c 'formfeed 'linefeed 'ls 'ps 'return 'return-linefeed 'any 'any-one)", 1, argc, argv);
   }
 
   if (argc)
@@ -3213,6 +3232,28 @@ do_read_line (int as_bytes, const char *who, int argc, Scheme_Object *argv[])
     } else if (ch == '\n') {
       if (lf)
 	break;
+    } else if (ch == 12) {
+      if (ff)
+        break;
+    } else if ( ch == 226) {
+      int ch2, ch3;
+
+      // \u2028 LS => 226 128 168
+      // \u2029 PS => 226 128 169
+      ch2 = scheme_peek_byte_skip(port, scheme_make_integer(0), NULL);
+      ch3 = scheme_peek_byte_skip(port, scheme_make_integer(1), NULL);
+
+      if (ch2 == 128) {
+        if (ch3 == 168 && ls) {
+          scheme_get_byte(port);
+          scheme_get_byte(port);
+          break;
+        } else if (ch3 == 169 && ps) {
+          scheme_get_byte(port);
+          scheme_get_byte(port);
+          break;
+        }
+      }
     }
 
     if (i >= size) {
