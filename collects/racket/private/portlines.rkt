@@ -5,8 +5,8 @@
          do-lines->port)
 
 (define (check-mode who mode)
-  (unless (memq mode '(linefeed return return-linefeed any any-one))
-    (raise-argument-error who "(or/c 'linefeed 'return 'return-linefeed 'any 'any-one)" mode)))
+  (unless (memq mode '(formfeed linefeed ls ps return return-linefeed any any-one))
+    (raise-argument-error who "(or/c 'formfeed 'linefeed 'ls 'ps 'return 'return-linefeed 'any 'any-one)" mode)))
 
 (define (port->x-lines who p mode read-line)
   (unless (input-port? p)
