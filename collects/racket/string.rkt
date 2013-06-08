@@ -39,7 +39,7 @@
 ;; that match at the beginning/end.
 (define get-rxs
   (let ([t (make-weak-hasheq)] [t+ (make-weak-hasheq)])
-    (let ([spaces '(#px"\\s+" #px"^\\s+" #px"\\s+$")])
+    (let ([spaces '(#px"[\\s|\u2028|\u2029]+" #px"^[\\s|\u2028|\u2029]+" #px"[\\s|\u2028|\u2029]+$")])
       (hash-set! t none spaces)
       (hash-set! t+ none spaces))
     (λ (who rx +?)
