@@ -170,7 +170,7 @@
   (and (string? b) (not (immutable? b))))
 
 (define (line-mode-symbol? s)
-  (memq s '(linefeed return return-linefeed any any-one)))
+  (memq s '(formfeed linefeed ls ps return return-linefeed any any-one)))
 
 (define (evt?/false v)
   (or (eq? #f v) (evt? v)))
@@ -1344,18 +1344,21 @@
     [(_ str)
      (datum->syntax
       #'here
-      (byte-regexp (string->bytes/latin-1
+      (byte-regexp (string->bytes/utf-8
                     (format "^(?:(.*?)~a)|(.*?$)" (syntax-e #'str)))))]))
 
 (define read-bytes-line-evt
   (lambda (input-port [mode 'linefeed])
     (wrap-evt
      (regexp-match-evt (case mode
+                         [(formfeed) (newline-rx "\u000c")]
                          [(linefeed) (newline-rx "\n")]
+                         [(ls) (newline-rx "\u2028")]
+                         [(ps) (newline-rx "\u2029")]
                          [(return) (newline-rx "\r")]
                          [(return-linefeed) (newline-rx "\r\n")]
-                         [(any) (newline-rx "(?:\r\n|\r|\n)")]
-                         [(any-one) (newline-rx "[\r\n]")])
+                         [(any) (newline-rx "(?:\r\n|\r|\n|\u000c|\u2028|\u2029)")]
+                         [(any-one) (newline-rx "[\r\n\u000c\u2028\u2029]")])
                        input-port)
      (lambda (m)
        (or (cadr m)
