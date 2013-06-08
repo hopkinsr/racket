@@ -3241,9 +3241,9 @@ do_read_line (int as_bytes, const char *who, int argc, Scheme_Object *argv[])
       // \u2028 LS => 226 128 168
       // \u2029 PS => 226 128 169
       ch2 = scheme_peek_byte_skip(port, scheme_make_integer(0), NULL);
-      ch3 = scheme_peek_byte_skip(port, scheme_make_integer(1), NULL);
 
       if (ch2 == 128) {
+        ch3 = scheme_peek_byte_skip(port, scheme_make_integer(1), NULL);
         if (ch3 == 168 && ls) {
           scheme_get_byte(port);
           scheme_get_byte(port);
