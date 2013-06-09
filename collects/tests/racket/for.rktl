@@ -61,6 +61,10 @@
 
 (test-sequence [("abc" "def")] (in-lines (open-input-string "abc\ndef")))
 (test-sequence [(#"abc" #"def")] (in-bytes-lines (open-input-string "abc\ndef")))
+(test-sequence [("1" "2" "3" "4" "5" "6" "7")] (in-lines (open-input-string "1\f2\n3\r4\r\n5\u20286\u20297")))
+(test-sequence [(#"1" #"2" #"3" #"4" #"5" #"6" #"7")] (in-bytes-lines (open-input-string "1\f2\n3\r4\r\n5\u20286\u20297")))
+(test-sequence [("1\f2\n3\r4\r\n5" "6\u20297")] (in-lines (open-input-string "1\f2\n3\r4\r\n5\u20286\u20297") 'ls))
+(test-sequence [("1\f2\n3\r4\r\n5\u20286" "7")] (in-lines (open-input-string "1\f2\n3\r4\r\n5\u20286\u20297") 'ps))
 
 (test-sequence [(0 1 2 3 4 5)] (in-sequences (in-range 6)))
 (test-sequence [(0 1 2 3 4 5)] (in-sequences (in-range 4) '(4 5)))
