@@ -460,7 +460,7 @@ replaced if @racket[all?] is @racket[#f].
 
 
 @defproc[(string-split [str string?]
-                       [sep (or/c string? regexp?) #px"\\s+"]
+                       [sep (or/c string? regexp?) #px"[\\s|\u2028|\u2029]+"]
                        [#:trim? trim? any/c #t]
                        [#:repeat? repeat? any/c #f])
          (listof string?)]{
@@ -484,7 +484,7 @@ and @racket[repeat?]  controls matching repeated sequences.
 
 
 @defproc[(string-trim [str string?]
-                      [sep (or/c string? regexp?) #px"\\s+"]
+                      [sep (or/c string? regexp?) #px"[\\s|\u2028|\u2029]+"]
                       [#:left? left? any/c #t]
                       [#:right? right? any/c #t]
                       [#:repeat? repeat? any/c #f])

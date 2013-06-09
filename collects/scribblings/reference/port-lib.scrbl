@@ -41,7 +41,7 @@ Reads all bytes from @racket[in] and returns them as a @tech{byte string}.
 ]}
 
 @defproc[(port->lines [in input-port? (current-input-port)]
-                      [#:line-mode line-mode (or/c 'linefeed 'return 'return-linefeed 'any 'any-one) 'any])
+                      [#:line-mode line-mode (or/c 'formfeed 'linefeed 'ls 'ps 'return 'return-linefeed 'any 'any-one) 'any])
          (listof string?)]{
 
 Read all characters from @racket[in], breaking them into lines. The
@@ -55,7 +55,7 @@ Read all characters from @racket[in], breaking them into lines. The
 ]}
 
 @defproc[(port->bytes-lines [in input-port? (current-input-port)]
-                            [#:line-mode line-mode (or/c 'linefeed 'return 'return-linefeed 'any 'any-one) 'any])
+                            [#:line-mode line-mode (or/c 'formfeed 'linefeed 'ls 'ps 'return 'return-linefeed 'any 'any-one) 'any])
          (listof bytes?)]{
 
 Like @racket[port->lines], but reading bytes and collecting them into
@@ -672,7 +672,7 @@ a byte string.}
 
 
 @defproc[(read-line-evt [in input-port?]
-                        [mode (or/c 'linefeed 'return 'return-linefeed 'any 'any-one)])
+                        [mode (or/c 'formfeed 'linefeed 'ls 'ps 'return 'return-linefeed 'any 'any-one)])
          evt?]{
 
 Returns a @tech{synchronizable event} that is ready when a line of
@@ -687,7 +687,7 @@ bytes in the port's stream.}
 
 
 @defproc[(read-bytes-line-evt [in input-port?]
-                              [mode (or/c 'linefeed 'return 'return-linefeed 'any 'any-one)])
+                              [mode (or/c 'formfeed 'linefeed 'ls 'ps 'return 'return-linefeed 'any 'any-one)])
          evt?]{
  
 Like @racket[read-line-evt], but returns a byte string instead of a

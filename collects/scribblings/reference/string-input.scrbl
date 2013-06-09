@@ -48,7 +48,7 @@ an end-of-file, then @racket[eof] is returned.}
 
 
 @defproc[(read-line [in input-port? (current-input-port)]
-                    [mode (or/c 'linefeed 'return 'return-linefeed 'any 'any-one) 'linefeed])
+                    [mode (or/c 'formfeed 'linefeed 'ls 'ps 'return 'return-linefeed 'any 'any-one) 'linefeed])
          (or/c string? eof-object?)]{
 
 Returns a string containing the next line of bytes from @racket[in].
@@ -63,8 +63,13 @@ The @racket[mode] argument determines the line separator(s). It
 must be one of the following symbols:
 
  @itemize[
+  @item{@indexed-racket['formfeed] breaks lines on formfeed characters.}
 
   @item{@indexed-racket['linefeed] breaks lines on linefeed characters.}
+
+  @item{@indexed-racket['ls] breaks lines on the Unicode LS character.}
+
+  @item{@indexed-racket['ps] breaks lines on the Unicode PS character.}
 
   @item{@indexed-racket['return] breaks lines on return characters.}
 
@@ -74,13 +79,13 @@ must be one of the following symbols:
   similarly, a linefeed that is not preceded by a return is included
   in the result string.}
 
-  @item{@indexed-racket['any] breaks lines on any of a return
+  @item{@indexed-racket['any] breaks lines on any of a formfeed, LS, PS, return
   character, linefeed character, or return-linefeed combination. If a
   return character is followed by a linefeed character, the two are
   treated as a combination.}
 
-  @item{@indexed-racket['any-one] breaks lines on either a return or
-  linefeed character, without recognizing return-linefeed
+  @item{@indexed-racket['any-one] breaks lines on either a formfeed, LS, PS,
+  return or linefeed character, without recognizing return-linefeed
   combinations.}
 
 ]
@@ -114,7 +119,7 @@ is opened in text mode, @racket['linefeed] is usually the appropriate
 
 
 @defproc[(read-bytes-line [in input-port? (current-input-port)] 
-                    [mode (or/c 'linefeed 'return 'return-linefeed 'any 'any-one) 'linefeed])
+                    [mode (or/c 'formfeed 'linefeed 'ls 'ps 'return 'return-linefeed 'any 'any-one) 'linefeed])
          (or/c bytes? eof-object?)]{
 Like @racket[read-line], but reads bytes and produces a byte string.}
 

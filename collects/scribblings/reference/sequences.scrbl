@@ -305,7 +305,7 @@ each element in the sequence.
   @racket[in] (equivalent to @racket[(in-port read-char in)]).}
 
 @defproc[(in-lines [in input-port? (current-input-port)]
-                   [mode (or/c 'linefeed 'return 'return-linefeed 'any 'any-one) 'any])
+                   [mode (or/c 'formfeed 'linefeed 'ls 'ps 'return 'return-linefeed 'any 'any-one) 'any])
          sequence?]{
   Returns a sequence equivalent to
   @racket[(in-port (lambda (p) (read-line p mode)) in)].  Note that
@@ -313,7 +313,7 @@ each element in the sequence.
   @racket[read-line] is @racket['linefeed].}
 
 @defproc[(in-bytes-lines [in input-port? (current-input-port)]
-                         [mode (or/c 'linefeed 'return 'return-linefeed 'any 'any-one) 'any])
+                         [mode (or/c 'formfeed 'linefeed 'ls 'ps 'return 'return-linefeed 'any 'any-one) 'any])
          sequence?]{
   Returns a sequence equivalent to
   @racket[(in-port (lambda (p) (read-bytes-line p mode)) in)].  Note
